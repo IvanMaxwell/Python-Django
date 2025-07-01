@@ -1,0 +1,9 @@
+<h1>Message Board</h1>
+<a href="{% url 'post_message' %}">Post a Message</a>
+<ul>
+  {% for msg in messages %}
+    <li><strong>{{ msg.name }}</strong>: {{ msg.content }} <em>({{ msg.timestamp }})</em></li>
+  {% empty %}
+    <li>No messages yet.</li>
+  {% endfor %}
+</ul>

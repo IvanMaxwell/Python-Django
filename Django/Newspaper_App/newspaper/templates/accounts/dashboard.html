@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        border: 2px solid #ddd;
+        border-radius: 12px;
+        background-color: #f9f9f9;
+        font-family: Arial, sans-serif;
+    }
+
+    .dashboard-header {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .dashboard-section {
+        margin-bottom: 15px;
+    }
+
+    .dashboard-section h3 {
+        margin: 0 0 5px 0;
+        color: #555;
+    }
+
+    .dashboard-section p {
+        margin: 0;
+        color: #666;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-top: 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+    }
+
+    .button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">Welcome to Your Dashboard</div>
+
+    <div class="dashboard-section">
+        <h3>Your Profile</h3>
+        <p>Name: {{ user.username }}</p>
+        <p>Email: {{ user.email }}</p>
+    </div>
+
+    <div class="dashboard-section">
+        <h3>Actions</h3>
+        <a href="#" class="button">Update Profile</a>
+        <a href="#" class="button">View Reports</a>
+    </div>
+</div>
+{% endblock %}

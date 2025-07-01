@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Newspaper App{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f8;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            background-color: #2c3e50;
+            overflow: hidden;
+            padding: 10px 20px;
+        }
+
+        .navbar a {
+            float: left;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 10px 16px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: #34495e;
+        }
+
+        .navbar-right {
+            float: right;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="/accounts/dashboard/">Dashboard</a>
+        <a href="/admin/">Admin</a>
+        {% if user.is_authenticated %}
+            <div class="navbar-right">
+                <a href="#">Hi, {{ user.username }}</a>
+                <a href="/accounts/logout/">Logout</a>
+            </div>
+        {% else %}
+            <div class="navbar-right">
+                <a href="/accounts/login/">Login</a>
+                <a href="/accounts/register/">Register</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Newspaper App</p>
+    </footer>
+
+</body>
+</html>

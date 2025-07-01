@@ -1,0 +1,10 @@
+<!-- board/templates/board/post_message.html -->
+<h1>Post a Message</h1>
+<form method="post">
+  {% csrf_token %}
+  <label>Name:</label><br>
+  <input type="text" name="name" required><br>
+  <label>Message:</label><br>
+  <textarea name="content" required></textarea><br><br>
+  <button type="submit">Post</button>
+</form>
