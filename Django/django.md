@@ -1454,97 +1454,89 @@ git push -u origin main
 
 ---
 
-# Chapter 4: Blog App
+# Chapter 4: Django Blog App 
+
+This guide builds a basic blog app in Django that:
+
+* Lists all blog posts on the homepage
+* Has a clean UI using inline CSS
+* Does not include user login, registration, or post creation via form
+* we will add new features in upcoming lessons
 
 ---
 
-##  Project Setup
-
-
-### 1. Create and Activate Virtual Environment
-
+## 1. Set up the project
 
 bash
 
 ```
+# Create project folder
 mkdir django-blog
 cd django-blog
-````
 
-### 2. Install Django:
 
-bash
-
-```
-
-pip install django
-```
-
-### 3. Start Django Project:
-
-bash
-
-```
+# Create a Django project
 django-admin startproject myblog .
+
+# Create a blog app
+python manage.py startapp blog
 ```
-
-### 4. Run Server to Test Setup:
-
-bash
-
-```
-python manage.py runserver
-```
-
-Go to: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+## Then create templates into the django-blog
 
 ---
 
-##  Create the Blog App:
+## 2. Update settings.py
 
-bash
-```
-python manage.py startapp blog
-```
+Open `myblog/settings.py` and make the following changes:
 
-Add `'blog'` to `INSTALLED_APPS` in `myblog/settings.py`.
+### Add the blog app to installed apps
 
 python
 
 ```
-# myblog/settings.py
-
 INSTALLED_APPS = [
     ...
-    'blog',                                #Register app
+    'blog',  # Enables the blog app
 ]
 ```
 
+### Configure templates directory
+
+```python
+import os  # Required for BASE_DIR path handling
+
+TEMPLATES = [
+    {
+        ...
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Adds global templates folder
+        'APP_DIRS': True,  # Enables app-specific templates
+        ...
+    },
+]
+```
 
 ---
 
-##  Create Post Model:
+## 3. Define the BlogPost model
 
-In `blog/models.py`:
+In `blog/models.py
+
 
 python
-```
-from django.db import models
-from django.utils import timezone
 
-class Post(models.Model):
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-    date_posted = models.DateTimeField(default=timezone.now)
-    author = models.CharField(max_length=100)
+```
+from django.db import models  # Import Django's model module
+
+class BlogPost(models.Model):  # Defines the blog post model
+    title = models.CharField(max_length=200)  # Title of the post
+    content = models.TextField()  # Content of the post
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp
 
     def __str__(self):
-        return self.title
+        return self.title  # Display post title in admin
 ```
 
----
-
-##  Migrate Database
+### Make and apply migrations
 
 bash
 
@@ -1555,20 +1547,140 @@ python manage.py migrate
 
 ---
 
-##  Register Model in Admin
+## 4. Create a view
 
-In `blog/admin.py
+In `blog/views.py`:
+
+python
+
+```
+from django.shortcuts import render  # Imports render shortcut
+from .models import BlogPost  # Imports the BlogPost model
+
+def home(request):
+    posts = BlogPost.objects.all()  # Fetch all blog posts
+    return render(request, 'home.html', {'posts': posts})  # Render template with posts
+```
+
+---
+
+## 5. Configure URLs
+
+### In `myblog/urls.py`:
 
 python
 
 ```
 from django.contrib import admin
-from .models import Post
+from django.urls import path
+from blog.views import home  # Import home view
 
-admin.site.register(Post)
+urlpatterns = [
+    path('admin/', admin.site.urls),  # Admin route
+    path('', home, name='home'),  # Home page route
+]
 ```
 
-Create superuser:
+---
+
+## 6. Create the template
+
+### Create folder:
+
+```
+django-blog/
+└── templates/
+    └── home.html
+```
+
+### Create `home.html`:
+
+html
+```
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Blog</title>
+    <style>
+        /* Inline CSS to style the page */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        li strong {
+            display: block;
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>All Blog Posts</h1>
+        <ul>
+            {% for post in posts %}
+                <li>
+                    <strong>{{ post.title }}</strong> <!-- Post title -->
+                    {{ post.content }} <!-- Post content -->
+                </li>
+            {% empty %}
+                <li>No posts available.</li> <!-- Message if no posts -->
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
+```
+
+---
+
+## 7. Register model in admin
+
+In `blog/admin.py`:
+
+python
+
+```
+from django.contrib import admin
+from .models import BlogPost  # Import the BlogPost model
+
+admin.site.register(BlogPost)  # Register model with Django admin
+```
+
+Create a superuser to log in:
 
 bash
 
@@ -1576,390 +1688,310 @@ bash
 python manage.py createsuperuser
 ```
 
-Login at: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
-
 ---
 
-##  Create Blog View
-
-In `blog/views.py`:
-
-python
-```
-from django.shortcuts import render
-from .models import Post
-
-def home(request):
-    posts = Post.objects.all()
-    return render(request, 'blog/home.html', {'posts': posts})
-```
-
----
-
-## Configure URLs
-
-### In `blog/urls.py`:
-
-python
-```
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path('', views.home, name='blog-home'),
-]
-```
-
-### In `myblog/urls.py`:
-
-python
-```
-from django.contrib import admin
-from django.urls import path, include
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('blog.urls')),
-]
-```
-
----
-
-##  Add Templates
-
-### Note :This has style tag included  
-
-Create `blog/templates/blog/home.html`:
-html
-```
-<html>
- <head>
- <title>Django blog</title>
-
- <style>
-
-    
-    h1{
-        font-size: 3rem;
-        display: flex;
-        justify-content: center;
-        align-items: baseline;
-        font-display: block;
-        font-family: 'Times New Roman', Times, serif;
-        text-transform: uppercase;
-        background-color: rgb(98, 69, 128);
-
-    }
-
-     a{
-        color:rgb(218, 181, 218);
-        background-color: rgb(98, 69, 128);
-        display: flex;
-        justify-content: center;
-    }
-
-    .a1{
-        font-family: 'Times New Roman', Times, serif;
-        font-size: 1.7em;
-        text-transform: capitalize;
-        display: grid;
-        align-items: center;
-        justify-content: center;
-        
-    }
+## 8. Run the server
 
 
- </style>
+## before you run the server check if the structure of your directory matches this following image,
 
-</head>
- <body>
- <header>
- <h1><a href="{% url 'home' %}">Django blog</a></h1>
- </header>
- <div class="a1">
- {% block content %}
- {% endblock content %}
- </div>
- </body>
- </html>    
-```
+![image](https://github.com/user-attachments/assets/97ac74e2-4d04-4257-83f8-5f22a2f1f3a5)
 
----
 
-##  Run the Server
 bash
+
 ```
 python manage.py runserver
 ```
 
-Visit: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+Visit:
+
+* [http://127.0.0.1:8000/](http://127.0.0.1:8000/) to see your homepage
+* [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin) to add posts
+
+
+
 
 ---
 
-##  Features
+## 9. Optional: Create `.gitignore`
 
-* Display blog posts on homepage
-* Admin panel to manage posts
-* Simple model and view setup
+Create a `.gitignore` file in the root directory:
+
+gitignore
+
+```
+venv/
+__pycache__/
+*.pyc
+*.sqlite3
+.env
+```
 
 ---
 
-##  Next Steps (Optional)
+## 10. Push to GitHub (additional)
 
-* Add a `Post Detail` page
-* Link posts to Django `User` model
-* Use Bootstrap for styling
-* Add forms for creating/editing posts
+```bash
+git init
+git add .
+git commit -m "Initial Django blog setup with inline CSS"
+git remote add origin https://github.com/yourusername/django-blog.git
+git push -u origin main
+```
 
 ---
+
+![image](https://github.com/user-attachments/assets/ba5f3f73-d755-4104-b774-d97989784f0d)
 
 
 
 # Chapter 5: Forms in django
 
-## Adding customize add page in blog app for users
 
-
----
-
-#  Add "Create Post" Functionality
-
-We'll walk through the steps to let users add posts via a web form.
+To learn forms in django we will be adding customize add page in blog app for users adds **Create, Edit, and Delete** functionality to your existing Django Blog app using Django forms and custom HTML templates, with inline CSS and code comments for clarity.
 
 ---
 
-## 1.  Create the Post Form
+# Django Blog App – Add Create, Edit, Delete (with Forms)
 
-Create a new file: `blog/forms.py`
+This guide continues from your existing read-only blog. We will:
+
+* Add views for creating, editing, and deleting posts
+* Create custom HTML templates for each
+* Use Django’s `ModelForm` to handle forms
+* Templates use inline CSS
+* URLs named for easy access: `post_create`, `post_edit`, `post_delete`
+`
+
+---
+
+## 1. Create a Django Form
+
+In `blog/forms.py` (create the file if it doesn't exist):
 
 ```python
-from django import forms
-from .models import Post
+from django import forms  # Django's forms module
+from .models import BlogPost  # Import the BlogPost model
 
-class PostForm(forms.ModelForm):
+class BlogPostForm(forms.ModelForm):
     class Meta:
-        model = Post
-        fields = ['title', 'content', 'author']
+        model = BlogPost  # Link form to BlogPost model
+        fields = ['title', 'content']  # Include these fields in the form
 ```
 
 ---
 
-## 2.  Create the View to Handle the Form
+## 2. Update Views for CRUD
 
-Update `blog/views.py`:
+In `blog/views.py`, import necessary tools:
 
-python
-
+```python
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import BlogPost
+from .forms import BlogPostForm
 ```
-from django.shortcuts import render, redirect
-from .models import Post
-from .forms import PostForm
 
-def home(request):
-    posts = Post.objects.all()
-    return render(request, 'blog/home.html', {'posts': posts})
+### View to create a new post
 
-def create_post(request):
+```python
+def post_create(request):
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = BlogPostForm(request.POST)  # Bind data to form
+        if form.is_valid():
+            form.save()  # Save post to DB
+            return redirect('home')  # Redirect to homepage
+    else:
+        form = BlogPostForm()  # Show empty form
+    return render(request, 'post_form.html', {'form': form, 'action': 'Create'})
+```
+
+### View to edit an existing post
+
+```python
+def post_edit(request, pk):
+    post = get_object_or_404(BlogPost, pk=pk)  # Get post or 404
+    if request.method == 'POST':
+        form = BlogPostForm(request.POST, instance=post)  # Bind data to existing instance
         if form.is_valid():
             form.save()
-            return redirect('blog-home')
+            return redirect('home')
     else:
-        form = PostForm()
-    return render(request, 'blog/create_post.html', {'form': form})
+        form = BlogPostForm(instance=post)
+    return render(request, 'post_form.html', {'form': form, 'action': 'Edit'})
+```
+
+### View to delete a post
+
+```python
+def post_delete(request, pk):
+    post = get_object_or_404(BlogPost, pk=pk)
+    if request.method == 'POST':
+        post.delete()  # Delete post
+        return redirect('home')
+    return render(request, 'post_confirm_delete.html', {'post': post})
 ```
 
 ---
 
-## 3.  Add URL for "Add Post" Page
+## 3. Update `urls.py`
 
-In `blog/urls.py`:
+In `myblog/urls.py`:
 
-python
-
-```
+```python
+from django.contrib import admin
 from django.urls import path
-from . import views
+from blog.views import home, post_create, post_edit, post_delete
 
 urlpatterns = [
-    path('', views.home, name='blog-home'),
-    path('add/', views.create_post, name='create-post'),
+    path('admin/', admin.site.urls),
+    path('', home, name='home'),  # Home page
+    path('post/new/', post_create, name='post_create'),  # Create
+    path('post/<int:pk>/edit/', post_edit, name='post_edit'),  # Edit
+    path('post/<int:pk>/delete/', post_delete, name='post_delete'),  # Delete
 ]
 ```
 
 ---
 
-## 4.  Create the HTML and CSS Template for the Form
+## 4. Update Templates
 
-Create file: `blog/templates/blog/create_post.html`
+### `templates/home.html`
 
-html
+Update your homepage template to include **edit/delete links** and a **create button**.
 
-```
+```html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add New Post</title>
+    <title>My Blog</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f4f4f4;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        form {
-            background: #fff;
-            padding: 25px;
-            border: 1px solid #140b0b;
-            border-radius: 8px;
-            max-width: 500px;
-        }
-
-        form p {
-            margin-bottom: 15px;
-        }
-
-        button {
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-
-        a.back {
-            display: inline-block;
-            margin-top: 20px;
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        a.back:hover {
-            text-decoration: underline;
-        }
+        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 8px; }
+        h1 { text-align: center; }
+        a.button { background: #28a745; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; }
+        a.button:hover { background: #218838; }
+        .post-actions { margin-top: 5px; }
+        .post-actions a { margin-right: 10px; color: #007bff; }
+        .post-actions a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <h1>Add New Post</h1>
+<div class="container">
+    <h1>All Blog Posts</h1>
+    <a href="{% url 'post_create' %}" class="button">Create New Post</a>
+    <ul>
+        {% for post in posts %}
+            <li>
+                <strong>{{ post.title }}</strong><br>
+                {{ post.content }}
+                <div class="post-actions">
+                    <a href="{% url 'post_edit' post.pk %}">Edit</a>
+                    <a href="{% url 'post_delete' post.pk %}">Delete</a>
+                </div>
+            </li>
+        {% empty %}
+            <li>No posts available.</li>
+        {% endfor %}
+    </ul>
+</div>
+</body>
+</html>
+```
+
+
+![image](https://github.com/user-attachments/assets/ad7250a1-58a2-445f-b350-7bb6eba5efc2)
+
+
+
+---
+
+### `templates/post_form.html`
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ action }} Post</title>
+    <style>
+        body { font-family: sans-serif; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; }
+        form label { display: block; margin-top: 15px; }
+        form input, form textarea { width: 100%; padding: 8px; margin-top: 5px; }
+        button { margin-top: 20px; padding: 10px 15px; background: #007bff; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+        a { text-decoration: none; color: #007bff; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>{{ action }} Post</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Post</button>
+        {{ form.as_p }} <!-- Renders form fields with <p> tags -->
+        <button type="submit">{{ action }}</button>
     </form>
-    <a href="{% url 'blog-home' %}">Back to Home</a>
+    <br>
+    <a href="{% url 'home' %}">Back to home</a>
+</div>
 </body>
 </html>
-
 ```
+
+
+![image](https://github.com/user-attachments/assets/c54003b8-29b1-400c-a1f5-23a6343740c3)
+
 
 ---
 
-## 5.  Add Link to "Add Post" on the Homepage and also edit css
+### `templates/post_confirm_delete.html`
 
-Update `blog/templates/blog/home.html`:
-
-html
-
-```
+```html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Blog Home</title>
+    <title>Delete Post</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f9f9f9;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .post {
-            background: #fff;
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-
-        .post h2 {
-            margin: 0;
-            color: #2c3e50;
-        }
-
-        .post small {
-            color: #888;
-        }
-
-        a.button {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-
-        a.button:hover {
-            background-color: #0056b3;
-        }
+        body { font-family: sans-serif; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 100px auto; background: white; padding: 30px; border-radius: 10px; text-align: center; }
+        button { margin-top: 20px; padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #c82333; }
+        a { display: block; margin-top: 20px; color: #007bff; }
     </style>
 </head>
 <body>
-    <h1>Blog Posts</h1>
-
-    <a href="{% url 'create-post' %}" class="button">+ Add New Post</a>
-
-    {% for post in posts %}
-        <div class="post">
-            <h2>{{ post.title }}</h2>
-            <p>{{ post.content }}</p>
-            <small>By {{ post.author }} on {{ post.date_posted }}</small>
-        </div>
-    {% empty %}
-        <p>No posts yet.</p>
-    {% endfor %}
+<div class="container">
+    <h2>Are you sure you want to delete this post?</h2>
+    <p><strong>{{ post.title }}</strong></p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Yes, Delete</button>
+    </form>
+    <a href="{% url 'home' %}">Cancel</a>
+</div>
 </body>
 </html>
-
 ```
+
+
+![image](https://github.com/user-attachments/assets/e7c1ec7b-da07-42a0-bfde-32f1ee8bfc2e)
+
+
 
 ---
 
-##  Final Step: Test It!
+## 5. Git Commands(additional)
 
-Run the server:
-
-bash
-
+```bash
+git add .
+git commit -m "Add create, edit, delete functionality with custom forms and templates"
+git push
 ```
-python manage.py runserver
-```
-
-Then go to:
-
-* Home: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-* Add Post: [http://127.0.0.1:8000/add/](http://127.0.0.1:8000/add/)
-
 ---
 
 # Chapter 6:  Newspaper App
 
-we have build three apps induvial for more understanding one has home,about pages which has links and about the app which is connected with following article app which will have options to create a new article and  update delete and comment on existing articles and finally the accounts app that can have paasword login security and user accounts. 
+we have build three apps induvial for more understanding one has home,about pages which has links and about the app which is connected with following article app which will have options to create a new article and  update delete and comment on existing articles and finally the accounts app that can have password login security and user accounts. 
 
 ## Pages app
 
