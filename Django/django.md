@@ -1995,6 +1995,9 @@ we have build three apps induvial for more understanding one has home,about page
 
 ## Pages app
 
+
+**NOTE**: This is an stand alone project not connected with newspaper app ,but we use the same formate and with base.html and different css style in upcoming projects
+
 ---
 
 ## Purpose of the `pages` App
@@ -2011,7 +2014,10 @@ we have build three apps induvial for more understanding one has home,about page
 
 Run this in your terminal:
 
-```bash
+bash
+
+```
+django-admin startproject pages_project
 python manage.py startapp pages
 ```
 
@@ -2021,7 +2027,9 @@ python manage.py startapp pages
 
 In `settings.py` under `INSTALLED_APPS`:
 
-```python
+python
+
+```
 INSTALLED_APPS = [
     ...
     'pages',
@@ -2034,7 +2042,9 @@ INSTALLED_APPS = [
 
 **`pages/urls.py`** (create this file):
 
-```python
+python
+
+```
 from django.urls import path
 from .views import HomePageView, AboutPageView
 
@@ -2046,7 +2056,9 @@ urlpatterns = [
 
 **Update main `urls.py`** in `newspaperapp/urls.py`:
 
-```python
+python
+
+```
 from django.contrib import admin
 from django.urls import path, include
 
@@ -2062,7 +2074,9 @@ urlpatterns = [
 
 **`pages/views.py`**:
 
-```python
+python
+
+```
 from django.views.generic import TemplateView
 
 class HomePageView(TemplateView):
@@ -2070,6 +2084,7 @@ class HomePageView(TemplateView):
 
 class AboutPageView(TemplateView):
     template_name = 'pages/about.html'
+
 ```
 
 ---
@@ -2078,74 +2093,204 @@ class AboutPageView(TemplateView):
 
 Create these folders if they don't exist:
 
-```
-/templates/pages/home.html
-/templates/pages/about.html
-```
+
+**templates/home.html**
+
+**templates/about.html**
+
 
 ---
 
 ####  `home.html`
 
-```django
-{% extends 'base.html' %}
-{% block title %}Home{% endblock %}
-{% block content %}
-  <h1>Welcome to the Newspaper App</h1>
-  <p>This is the homepage.</p>
-{% endblock %}
+html 
+
 ```
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jeevi Times - Home</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7fa;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 50px auto;
+      padding: 40px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    h1 {
+      color: #2c3e50;
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .btn-group {
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 24px;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #2c80b4;
+    }
+
+    .footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Jeevi Times</h1>
+    <p class="subtitle">
+      Your daily source for news, opinions, and stories written by our community.
+    </p>
+
+    <div class="btn-group">
+      <a href="/articles/" class="btn">Browse Articles</a>
+      <a href="/articles/new/" class="btn">Write an Article</a>
+      <a href="/about/" class="btn">About Us</a>
+      <a href="/login/" class="btn">Login</a>
+    </div>
+
+    <div class="footer">
+      &copy; 2025 Jeevi Times. Built with Django.
+    </div>
+  </div>
+</body>
+</html>
+
+```
+---
+
+![image](https://github.com/user-attachments/assets/8fecb22f-3072-41fb-b214-7071474a5cec)
+
 
 ---
 
 ####  `about.html`
 
-```django
-{% extends 'base.html' %}
-{% block title %}About{% endblock %}
-{% block content %}
-  <h1>About Us</h1>
-  <p>This is a Django project for practicing static pages.</p>
-{% endblock %}
+html
 ```
-
----
-
-###  6. Shared Base Template (Optional but Recommended)
-
-Place in: `/templates/base.html`
-
-```django
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>{% block title %}Newspaper App{% endblock %}</title>
+    <meta charset="UTF-8">
+    <title>About - Jeevi Times</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        p {
+            font-size: 17px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
-    <nav>
-        <a href="/">Home</a>
-        <a href="/about/">About</a>
-    </nav>
-
-    <hr>
     <div class="container">
-        {% block content %}{% endblock %}
-    </div>
+        <h1>About Jeevi Times</h1>
+        <p>
+            <strong>Jeevi Times</strong> is a simple, community-focused news platform built with Django.
+            This project serves as a learning tool for beginners and a foundation for real-world Django applications.
+        </p>
+        <p>
+            Our goals:
+        </p>
+        <ul>
+            <li>Practice Django's template system and class-based views</li>
+            <li>Implement CRUD functionality for articles</li>
+            <li>Demonstrate user authentication and permission control</li>
+            <li>Showcase modular design using Django best practices</li>
+        </ul>
+        <p>
+            Whether you're here to read, write, or contribute — thank you for being part of Jeevi
 
-    <footer>
-        <p>&copy; 2025 Newspaper App</p>
-    </footer>
-</body>
-</html>
 ```
+
 
 ---
 
-###  7. Configure Template Settings
+![image](https://github.com/user-attachments/assets/ce215da7-21c8-4840-99d3-eb9a71d9e024)
+
+
+---
+
+
+###  6. Configure Template Settings
 
 In `settings.py`:
 
-```python
+python
+
+```
 TEMPLATES = [
     {
         ...
