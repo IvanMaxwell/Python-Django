@@ -1989,7 +1989,7 @@ git push
 ```
 ---
 
-# Chapter 6:  Newspaper App
+# Chapter 6:  Newspaper App (basic)
 
 we have build three apps induvial for more understanding one has home,about pages which has links and about the app which is connected with following article app which will have options to create a new article and  update delete and comment on existing articles and finally the accounts app that can have password login security and user accounts. 
 
@@ -3449,9 +3449,26 @@ Visit `http://127.0.0.1:8000/accounts/signup/` to start testing.
 
 ##  Structure of blog app after adding all the above given features
 
-![image](https://github.com/user-attachments/assets/ce60b01f-7631-4d43-88ab-11bd2bc59cad)
+
 
 ---
+
+
+
+# Chapter 8 : Newspaper app ( full version )
+
+
+This is a fully running news paper app combining all three app the acoounts ,articles ,pages and config them with their repective templates , this can be easily considered a beginner level project in django
+
+
+let's dive deep into django,
+
+
+## step-by-step guide:
+
+
+### step1: start project using command lines
+
 
 
 
