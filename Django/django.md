@@ -2309,40 +2309,213 @@ TEMPLATES = [
 
 ## Ariticle app
 
-## 1. Models
 
-`articles/models.py`
+# Django Articles App Guide — CRUD, Comments & Static CSS 
+
+This guide walks you through building a simple Django app with:
+
+* Create, view, edit, and delete articles
+* Add comments to articles
+* Use custom HTML templates
+* Apply styling via a static CSS file
+
+---
+
+## 1. Project Setup
+
+### Create the project and app
+
+bash
+
+```
+django-admin startproject blogproject
+cd blogproject
+python manage.py startapp articles
+```
+
+### Register the app in `blogproject/settings.py`
 
 python
 
 ```
+INSTALLED_APPS = [
+    ...
+    'articles',
+]
+```
+
+---
+
+## 2. Templates Setup
+
+### Folder structure to create
+
+```
+articles/
+├── templates/
+│   └── articles/
+│       ├── article_list.html
+│       ├── article_detail.html
+│       └── article_form.html
+```
+
+## Templates files
+---
+
+## 1. `article_list.html`
+
+**Path:** `articles/templates/articles/article_list.html`
+
+html
+
+```
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Articles</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>All Articles</h1>
+
+    <a href="{% url 'article_create' %}">+ New Article</a>
+
+    <ul>
+        {% for article in articles %}
+            <li>
+                <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
+                <br>
+                <small>Created on {{ article.created_at|date:"d M Y, H:i" }}</small>
+            </li>
+        {% empty %}
+            <li>No articles found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+```
+
+---
+
+## 2. `article_detail.html`
+
+**Path:** `articles/templates/articles/article_detail.html`
+
+html
+
+```
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ article.title }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>{{ article.title }}</h1>
+
+    <p>{{ article.content }}</p>
+    <small>Published: {{ article.created_at|date:"d M Y, H:i" }}</small>
+
+    <div>
+        <a href="{% url 'article_edit' article.pk %}">Edit</a> |
+        <a href="{% url 'article_delete' article.pk %}">Delete</a> |
+        <a href="{% url 'article_list' %}">Back to List</a>
+    </div>
+
+    <hr>
+
+    <h2>Comments</h2>
+    {% for comment in comments %}
+        <div>
+            <strong>{{ comment.author }}</strong> on {{ comment.created_at|date:"d M Y, H:i" }}<br>
+            {{ comment.text }}
+        </div>
+    {% empty %}
+        <p>No comments yet.</p>
+    {% endfor %}
+
+    <h3>Add a Comment</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Post Comment</button>
+    </form>
+</body>
+</html>
+```
+
+---
+
+## 3. `article_form.html`
+
+**Path:** `articles/templates/articles/article_form.html`
+
+html
+
+```
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if form.instance.pk %}Edit{% else %}New{% endif %} Article</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>{% if form.instance.pk %}Edit{% else %}New{% endif %} Article</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+
+    <a href="{% url 'article_list' %}">Back to List</a>
+</body>
+</html>
+```
+
+
+---
+
+## 3. Models — `articles/models.py`
+
+python
+
+```
+# articles/models.py
+
 from django.db import models
-from django.urls import reverse
 
 class Article(models.Model):
-    title           = models.CharField(max_length=200)
-    content         = models.TextField()
-    published_date  = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=200)  # Article title
+    content = models.TextField()              # Main content
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp on creation
 
     def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):              # lets admin “View on site”
-        return reverse('article_detail', kwargs={'pk': self.pk})
-
+        return self.title  # Used in admin panel and shell
 
 class Comment(models.Model):
-    article    = models.ForeignKey(Article, on_delete=models.CASCADE,
-                                   related_name='comments')
-    name       = models.CharField(max_length=100)
-    body       = models.TextField()
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comments')  # Link to article
+    author = models.CharField(max_length=100)  # Name of commenter
+    text = models.TextField()                  # Comment body
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Comment by {self.name}'
+        return f'Comment by {self.author}'
+
 ```
 
+---
+
+## 4. Migrations
+
 bash
+
 ```
 python manage.py makemigrations
 python manage.py migrate
@@ -2350,252 +2523,245 @@ python manage.py migrate
 
 ---
 
-## 2. Forms
-
-`articles/forms.py`
+## 5. Forms — `articles/forms.py`
 
 python
 
 ```
+# articles/forms.py
+
 from django import forms
-from .models import Comment, Article
+from .models import Article, Comment
+
+class ArticleForm(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = ['title', 'content']  # Fields to show in the form
 
 class CommentForm(forms.ModelForm):
     class Meta:
-        model  = Comment
-        fields = ['name', 'body']
+        model = Comment
+        fields = ['author', 'text']
 
-
-class ArticleForm(forms.ModelForm):     # for create / edit
-    class Meta:
-        model  = Article
-        fields = ['title', 'content']
 ```
 
 ---
 
-## 3. Views
-
-`articles/views.py`
+## 6. Views — `articles/views.py`
 
 python
 
 ```
-from django.views.generic import (ListView, DetailView,
-                                  CreateView, UpdateView, DeleteView)
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
+# articles/views.py
 
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Article
-from .forms import CommentForm, ArticleForm
+from .forms import ArticleForm, CommentForm
 
+# List all articles
+def article_list(request):
+    articles = Article.objects.all().order_by('-created_at')  # Newest first
+    return render(request, 'articles/article_list.html', {'articles': articles})
 
-class ArticleListView(ListView):
-    model               = Article
-    template_name       = 'articles/articles_list.html'
-    context_object_name = 'articles'
-    ordering            = ['-published_date']
-
-
-class ArticleCreateView(CreateView):
-    model         = Article
-    form_class    = ArticleForm
-    template_name = 'articles/article_form.html'   # reused for edit
-
-
-class ArticleUpdateView(UpdateView):
-    model         = Article
-    form_class    = ArticleForm
-    template_name = 'articles/article_form.html'   # same fields
-
-
-class ArticleDeleteView(DeleteView):
-    model         = Article
-    template_name = 'articles/article_delete.html'
-    success_url   = reverse_lazy('articles')
-
-
-class ArticleDetailView(DetailView):
-    model               = Article
-    template_name       = 'articles/article_detail.html'
-    context_object_name = 'article'
-
-    # handle comment POST
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
+# Show one article + comments
+def article_detail(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    comments = article.comments.all()
+    
+    if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.article = self.object
+            comment.article = article  # Link comment to the current article
             comment.save()
-        return redirect('article_detail', pk=self.object.pk)
+            return redirect('article_detail', pk=article.pk)
+    else:
+        form = CommentForm()
+    
+    return render(request, 'articles/article_detail.html', {
+        'article': article,
+        'comments': comments,
+        'form': form
+    })
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form']     = CommentForm()
-        context['comments'] = self.object.comments.all().order_by('-created_at')
-        return context
+# Create a new article
+def article_create(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('article_list')
+    else:
+        form = ArticleForm()
+    return render(request, 'articles/article_form.html', {'form': form})
+
+# Edit an existing article
+def article_edit(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():
+            form.save()
+            return redirect('article_detail', pk=pk)
+    else:
+        form = ArticleForm(instance=article)
+    return render(request, 'articles/article_form.html', {'form': form})
+
+# Delete article
+def article_delete(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    article.delete()
+    return redirect('article_list')
+
 ```
 
 ---
 
-## 4. URLs
+## 7. URLs
 
-`articles/urls.py`
+### `articles/urls.py`
 
 python
 
 ```
 from django.urls import path
-from .views import (
-    ArticleListView, ArticleCreateView, ArticleUpdateView,
-    ArticleDeleteView, ArticleDetailView,
-)
+from . import views
 
 urlpatterns = [
-    path('articles/',                      ArticleListView.as_view(),  name='articles'),
-    path('articles/new/',                  ArticleCreateView.as_view(), name='article_create'),
-    path('article/<int:pk>/',              ArticleDetailView.as_view(), name='article_detail'),
-    path('article/<int:pk>/edit/',         ArticleUpdateView.as_view(), name='article_edit'),
-    path('article/<int:pk>/delete/',       ArticleDeleteView.as_view(), name='article_delete'),
-]
-
-```
-
-In **project** `urls.py`:
-
-python
-
-```
-from django.urls import path, include
-urlpatterns = [
-    path('', include('articles.urls')),
-    path('admin/', include('django.contrib.admin.urls')),
+    path('', views.article_list, name='article_list'),
+    path('article/<int:pk>/', views.article_detail, name='article_detail'),
+    path('article/new/', views.article_create, name='article_create'),
+    path('article/<int:pk>/edit/', views.article_edit, name='article_edit'),
+    path('article/<int:pk>/delete/', views.article_delete, name='article_delete'),
 ]
 ```
 
----
-
-## 5. Templates (minimal versions)
-
-All extend `base.html` from earlier.
-
-### 5.1 `articles/articles_list.html`
-
-django
-
-```
-{% extends 'base.html' %}
-{% block title %}Articles{% endblock %}
-{% block content %}
-<h2>Latest Articles</h2>
-<a href="{% url 'article_create' %}">➕ New Article</a>
-{% for article in articles %}
-  <h3><a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a></h3>
-  <p>{{ article.content|truncatewords:25 }}</p>
-{% empty %}
-  <p>No articles yet.</p>
-{% endfor %}
-{% endblock %}
-```
-
-### 5.2 `articles/article_form.html`  (create & edit)
-
-django
-
-```
-{% extends 'base.html' %}
-{% block title %}{{ view.object|yesno:"Edit Article,New Article" }}{% endblock %}
-{% block content %}
-<h2>{{ view.object|yesno:"Edit Article,New Article" }}</h2>
-<form method="post">{% csrf_token %}{{ form.as_p }}
-  <button type="submit">Save</button>
-</form>
-{% endblock %}
-```
-
-### 5.3 `articles/article_delete.html`
-
-html
-
-```
-{% extends 'base.html' %}
-{% block content %}
-<h2>Delete Article</h2>
-<p>Are you sure you want to delete “{{ article.title }}”?</p>
-<form method="post">{% csrf_token %}<button type="submit">Yes, delete</button></form>
-<a href="{% url 'article_detail' article.pk %}">Cancel</a>
-{% endblock %}
-```
-
-### 5.4 `articles/article_detail.html`
-
-html
-
-```
-{% extends 'base.html' %}
-{% block title %}{{ article.title }}{% endblock %}
-{% block content %}
-<h1>{{ article.title }}</h1>
-<p>{{ article.content }}</p>
-
-<a href="{% url 'article_edit' article.pk %}">✏️ Edit</a>
-<a href="{% url 'article_delete' article.pk %}">🗑 Delete</a>
-
-<hr>
-<h3>Comments ({{ comments|length }})</h3>
-{% for c in comments %}
-  <p><strong>{{ c.name }}</strong> – {{ c.created_at|date:"Y-m-d H:i" }}<br>{{ c.body }}</p>
-{% empty %}<p>No comments yet.</p>{% endfor %}
-
-<hr>
-<h3>Leave a comment</h3>
-<form method="post">{% csrf_token %}{{ form.as_p }}
-  <button type="submit">Post</button>
-</form>
-{% endblock %}
-```
-
----
-
-## 6. Admin Registration (optional)
-
-`articles/admin.py`
+### `blogproject/urls.py`
 
 python
 
 ```
 from django.contrib import admin
-from .models import Article, Comment
+from django.urls import path, include
 
-@admin.register(Article)
-class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('title', 'published_date')
-    search_fields = ('title',)
-
-@admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ('article', 'name', 'created_at')
-    search_fields = ('name', 'body')
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('articles.urls')),
+]
 ```
 
 ---
 
-## 7. Permissions (Optional Tweaks)
+## 8. Static Files (CSS)
 
-* Wrap edit/delete buttons with `{% if user.is_authenticated %}` or author‑check.
-* Switch `ArticleCreateView`/`ArticleUpdateView` to `LoginRequiredMixin` and `UserPassesTestMixin` if desired.
+### Folder structure
+
+```
+articles/
+├── static/
+│   └── css/
+│       └── style.css
+```
+
+### Example `style.css`
+
+css
+
+```
+body {
+    font-family: Arial, sans-serif;
+    margin: 2rem;
+    background-color: #f9f9f9;
+}
+
+h1, h2 {
+    color: #222;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+}
+button:hover {
+    background-color: #0056b3;
+}
+```
 
 ---
 
-## 8. Testing Flow
+## 9. settings.py (Static Configuration)
 
-1. `python manage.py runserver`
-2. Visit `/articles/` → create an article.
-3. Click an article → detail view shows content.
-4. Test **Edit**, **Delete** links.
-5. Post a comment—should appear instantly.
-6. Try the admin “View on site” action (works via `get_absolute_url`).
+Basic required setting:
+
+python
+
+```
+STATIC_URL = '/static/'
+```
+
+If you use a global folder like `static/` at the root, then add this:
+
+python
+
+```
+import os
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+```
+
+---
+
+## 10. Run the Server and Test
+
+bash
+
+```
+python manage.py runserver
+```
+
+Visit in browser:
+
+* [http://127.0.0.1:8000/](http://127.0.0.1:8000/) — Article list
+* [http://127.0.0.1:8000/article/new/](http://127.0.0.1:8000/article/new/) — Create article
+* [http://127.0.0.1:8000/article/1/](http://127.0.0.1:8000/article/1/) — Article detail with comments
+
+---
+
+## 11. Optional: Admin Panel
+
+### `articles/admin.py`
+python
+```
+from django.contrib import admin
+from .models import Article, Comment
+
+admin.site.register(Article)
+admin.site.register(Comment)
+```
+
+Create admin user:
+
+bash
+
+```
+python manage.py createsuperuser
+```
+
+Login at:
+[http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
 
 ---
@@ -3468,6 +3634,10 @@ let's dive deep into django,
 
 
 ### step1: start project using command lines
+
+
+```
+django
 
 
 
