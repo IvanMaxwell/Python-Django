@@ -51,6 +51,8 @@
 * The View processes requests and returns responses.
 * The Template handles how data is displayed in HTML to the user.
 
+<img width="332" height="152" alt="mvt in djnago" src="https://github.com/user-attachments/assets/f332ac49-d394-4b7d-a215-13a98f4e0276" />
+
 ---
 
 ## Models
@@ -86,6 +88,9 @@
 * Defined in `urls.py`, each path is connected to a view function or class.
 * `include()` is used to organize app-level URLs.
 * It allows for clean and maintainable routing logic.
+
+  <img width="1200" height="628" alt="image" src="https://github.com/user-attachments/assets/687959a4-f731-4f49-9482-9ae29065f346" />
+
 
 ---
 
