@@ -1,5 +1,6 @@
 # Chapter 0: Django:   // Under-development
 
+
 ## Basic Django Terminology
 
 ### What is Django?
@@ -2402,6 +2403,9 @@ html
 </html>
 ```
 
+<img width="2140" height="727" alt="image" src="https://github.com/user-attachments/assets/15688369-d848-469f-91e5-fe34536fc390" />
+
+
 ---
 
 ## 2. `article_detail.html`
@@ -2483,6 +2487,7 @@ html
 </body>
 </html>
 ```
+<img width="1883" height="1003" alt="image" src="https://github.com/user-attachments/assets/36801908-748d-4c12-9b9f-f00c0e0a5b9c" />
 
 
 ---
@@ -2673,34 +2678,99 @@ articles/
 css
 
 ```
+/* Base styles */
 body {
-    font-family: Arial, sans-serif;
-    margin: 2rem;
-    background-color: #f9f9f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 2rem;
+    color: #333;
 }
 
-h1, h2 {
-    color: #222;
+/* Headings */
+h1, h2, h3 {
+    color: #1a1a1a;
 }
 
+/* Links */
 a {
-    color: #007bff;
+    color: #2b7cff;
     text-decoration: none;
+    font-weight: 500;
 }
 a:hover {
     text-decoration: underline;
 }
 
-button {
-    background-color: #007bff;
-    color: white;
-    padding: 0.5rem 1rem;
+/* Article list */
+ul {
+    list-style: none;
+    padding: 0;
+}
+li {
+    margin-bottom: 1rem;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Buttons */
+button, a.button-link {
+    background-color: #2b7cff;
+    color: #fff;
+    padding: 0.6rem 1.2rem;
     border: none;
     border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 0.5rem;
 }
-button:hover {
-    background-color: #0056b3;
+button:hover, a.button-link:hover {
+    background-color: #1a5fce;
 }
+
+/* Forms */
+form {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+form input, form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Comments */
+.comment {
+    background-color: #e9f0ff;
+    padding: 0.8rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+.comment strong {
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+
+
+
+after adding css the app should look like this ,
+
+
+
+
+<img width="2479" height="1243" alt="image" src="https://github.com/user-attachments/assets/3809c22d-fb65-471e-9c7b-da1c858cd0b8" />
+
+
 ```
 
 ---
@@ -2768,6 +2838,9 @@ python manage.py createsuperuser
 Login at:
 [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
+## structure of code,
+
+<img width="568" height="1192" alt="image" src="https://github.com/user-attachments/assets/4fbef58a-dd1a-494d-9227-368dde13b9bc" />
 
 ---
 
@@ -3173,7 +3246,7 @@ TEMPLATES = [
 
 ---
 
-## ✅ Step 2: Create URLs
+##  Step 2: Create URLs
 
 ### 2.1 In `accounts/urls.py`:
 
@@ -3218,7 +3291,7 @@ urlpatterns = [
 
 ---
 
-## ✅ Step 3: Create Signup View , homepageview and loginrequired
+##  Step 3: Create Signup View , homepageview and loginrequired
 
 ### 3.1 In `accounts/views.py`:
 
@@ -3258,7 +3331,7 @@ def dashboard(request):
 
 ---
 
-## ✅ Step 4: Create Templates
+##  Step 4: Create Templates
 
 
 
@@ -3592,7 +3665,7 @@ html
 
 ---
 
-## ✅ Step 5: Email Settings for Reset and Login Redirect
+## Step 5: Email Settings for Reset and Login Redirect
 
 Add to `settings.py` (use console backend for dev):
 
@@ -3606,7 +3679,7 @@ LOGIN_REDIRECT_URL = '/accounts/dashboard/'
 
 ---
 
-## ✅ Step 6: Migrate , create a superuser & Run
+## Step 6: Migrate , create a superuser & Run
 
 bash
 
