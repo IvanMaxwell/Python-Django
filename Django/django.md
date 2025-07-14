@@ -834,19 +834,20 @@ Here’s a GitHub-friendly, chapter-style breakdown and explanation for building
 5. **Create Templates**
 
    * Inside `pages/templates/`, create `home.html` and `about.html` with simple HTML headings.
+   * Add inline css since we have only two pages
 
 6. **Run the App**
 
    * Run `python manage.py runserver`.
    * Visit `http://127.0.0.1:8000/` for homepage and `/about/` for the about page.
 
-7. **Initialize Git**
+7. **(Optional)Initialize Git**
 
    * Run `git init`.
    * Create `.gitignore` to exclude files like `__pycache__/`, `*.pyc`, `db.sqlite3`, `.env`.
    * Commit initial setup with `git add .` and `git commit -m "Initial commit"`.
 
-8. **(Optional)Push to GitHub**
+8. **Push to GitHub**
 
    * Create a GitHub repository.
    * Add remote, rename default branch to `main`, and push code.
@@ -858,13 +859,7 @@ Here’s a GitHub-friendly, chapter-style breakdown and explanation for building
 
 ### 1. Initial Set Up
 
-**Install Django**
 
-bash
-
-```
-pip install django
-```
 
 ### Check django version
 
@@ -874,6 +869,17 @@ bash
 python -m django --version 
 
 ```
+
+**If version not shown**
+
+**Install Django**
+
+bash
+
+```
+pip install django
+```
+
 
 **Create a Django Project**
 
@@ -974,10 +980,92 @@ Add `home.html`:
 html
 
 ```
-<h1>Welcome to the Homepage</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jeevi Times - Home</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7fa;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 50px auto;
+      padding: 40px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    h1 {
+      color: #2c3e50;
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .btn-group {
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 24px;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #2c80b4;
+    }
+
+    .footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Jeevi Times</h1>
+    <p class="subtitle">
+      Your daily source for news, opinions, and stories written by our community.
+    </p>
+
+    <div class="btn-group">
+      <a href="/articles/" class="btn">Browse Articles</a>
+      <a href="/articles/new/" class="btn">Write an Article</a>
+      <a href="/about/" class="btn">About Us</a>
+      <a href="/login/" class="btn">Login</a>
+    </div>
+
+    <div class="footer">
+      &copy; 2025 Jeevi Times. Built with Django.
+    </div>
+  </div>
+</body>
+</html>
+
 ```
 
-![image](https://github.com/user-attachments/assets/0c5db5ad-9f19-40ca-a48c-c5a20f6111ee)
+<img width="2434" height="1070" alt="image" src="https://github.com/user-attachments/assets/6130b7fd-4fc6-4d03-979d-e04f55c0b274" />
 
 
 Add `about.html`:
@@ -985,9 +1073,81 @@ Add `about.html`:
 html
 
 ```
-<h1>About This Project</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About - Jeevi Times</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        p {
+            font-size: 17px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>About Jeevi Times</h1>
+        <p>
+            <strong>Jeevi Times</strong> is a simple, community-focused news platform built with Django.
+            This project serves as a learning tool for beginners and a foundation for real-world Django applications.
+        </p>
+        <p>
+            Our goals:
+        </p>
+        <ul>
+            <li>Practice Django's template system and class-based views</li>
+            <li>Implement CRUD functionality for articles</li>
+            <li>Demonstrate user authentication and permission control</li>
+            <li>Showcase modular design using Django best practices</li>
+        </ul>
+        <p>
+            Whether you're here to read, write, or contribute — thank you for being part of Jeevi
+
 ```
-![image](https://github.com/user-attachments/assets/0c8ab15b-c940-4e1a-ae36-7e3d94c21d12)
+<img width="2345" height="1007" alt="image" src="https://github.com/user-attachments/assets/96c0cccd-48ee-4061-8189-e305ccba5809" />
+
 
 
 ---
@@ -1140,6 +1300,8 @@ bash
 python manage.py createsuperuser           
 
 ```
+
+
 
 Register the model:
 
@@ -1460,7 +1622,7 @@ git push -u origin main
 
 ---
 
-# Chapter 4: Django Blog App 
+# Chapter 4: Django Blog App  // (needs to be recreated)
 
 This guide builds a basic blog app in Django that:
 
@@ -1693,6 +1855,7 @@ bash
 ```
 python manage.py createsuperuser
 ```
+<img width="1378" height="404" alt="image" src="https://github.com/user-attachments/assets/5cf317d1-51dc-43c8-bb05-3cd21cf46594" />
 
 ---
 
@@ -1995,325 +2158,7 @@ git push
 ```
 ---
 
-# Chapter 6:  Newspaper App (basic)
-
-we have build three apps induvial for more understanding one has home,about pages which has links and about the app which is connected with following article app which will have options to create a new article and  update delete and comment on existing articles and finally the accounts app that can have password login security and user accounts. 
-
-## Pages app
-
-
-**NOTE**: This is an stand alone project not connected with newspaper app ,but we use the same formate and with base.html and different css style in upcoming projects
-
----
-
-## Purpose of the `pages` App
-
-* Display static content (homepage, about page, etc.)
-* No models or forms
-* Uses `TemplateView` for simplicity
-
----
-
-##  Step-by-Step Guide
-
-###  1. Create the App
-
-Run this in your terminal:
-
-bash
-
-```
-django-admin startproject pages_project
-python manage.py startapp pages
-```
-
----
-
-###  2. Register the App
-
-In `settings.py` under `INSTALLED_APPS`:
-
-python
-
-```
-INSTALLED_APPS = [
-    ...
-    'pages',
-]
-```
-
----
-
-###  3. Define URLs for Pages
-
-**`pages/urls.py`** (create this file):
-
-python
-
-```
-from django.urls import path
-from .views import HomePageView, AboutPageView
-
-urlpatterns = [
-    path('', HomePageView.as_view(), name='home'),
-    path('about/', AboutPageView.as_view(), name='about'),
-]
-```
-
-**Update main `urls.py`** in `newspaperapp/urls.py`:
-
-python
-
-```
-from django.contrib import admin
-from django.urls import path, include
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('pages.urls')),  # this makes / and /about/ work
-]
-```
-
----
-
-###  4. Add Views
-
-**`pages/views.py`**:
-
-python
-
-```
-from django.views.generic import TemplateView
-
-class HomePageView(TemplateView):
-    template_name = 'pages/home.html'
-
-class AboutPageView(TemplateView):
-    template_name = 'pages/about.html'
-
-```
-
----
-
-###  5. Create Templates
-
-Create these folders if they don't exist:
-
-
-**templates/home.html**
-
-**templates/about.html**
-
-
----
-
-####  `home.html`
-
-html 
-
-```
- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Jeevi Times - Home</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f7fa;
-    }
-
-    .container {
-      max-width: 960px;
-      margin: 50px auto;
-      padding: 40px;
-      background-color: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-      text-align: center;
-    }
-
-    h1 {
-      color: #2c3e50;
-      font-size: 36px;
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      font-size: 18px;
-      color: #555;
-      margin-bottom: 30px;
-    }
-
-    .btn-group {
-      margin-top: 30px;
-    }
-
-    .btn {
-      display: inline-block;
-      margin: 10px;
-      padding: 12px 24px;
-      background-color: #3498db;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn:hover {
-      background-color: #2c80b4;
-    }
-
-    .footer {
-      margin-top: 40px;
-      font-size: 14px;
-      color: #999;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Welcome to Jeevi Times</h1>
-    <p class="subtitle">
-      Your daily source for news, opinions, and stories written by our community.
-    </p>
-
-    <div class="btn-group">
-      <a href="/articles/" class="btn">Browse Articles</a>
-      <a href="/articles/new/" class="btn">Write an Article</a>
-      <a href="/about/" class="btn">About Us</a>
-      <a href="/login/" class="btn">Login</a>
-    </div>
-
-    <div class="footer">
-      &copy; 2025 Jeevi Times. Built with Django.
-    </div>
-  </div>
-</body>
-</html>
-
-```
----
-
-![image](https://github.com/user-attachments/assets/8fecb22f-3072-41fb-b214-7071474a5cec)
-
-
----
-
-####  `about.html`
-
-html
-```
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>About - Jeevi Times</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7fa;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 60px auto;
-            padding: 40px;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-
-        p {
-            font-size: 17px;
-            line-height: 1.6;
-            color: #555;
-            margin-bottom: 20px;
-        }
-
-        ul {
-            margin-top: 10px;
-            padding-left: 20px;
-        }
-
-        li {
-            margin-bottom: 8px;
-            color: #444;
-        }
-
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 14px;
-            color: #888;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>About Jeevi Times</h1>
-        <p>
-            <strong>Jeevi Times</strong> is a simple, community-focused news platform built with Django.
-            This project serves as a learning tool for beginners and a foundation for real-world Django applications.
-        </p>
-        <p>
-            Our goals:
-        </p>
-        <ul>
-            <li>Practice Django's template system and class-based views</li>
-            <li>Implement CRUD functionality for articles</li>
-            <li>Demonstrate user authentication and permission control</li>
-            <li>Showcase modular design using Django best practices</li>
-        </ul>
-        <p>
-            Whether you're here to read, write, or contribute — thank you for being part of Jeevi
-
-```
-
-
----
-
-![image](https://github.com/user-attachments/assets/ce215da7-21c8-4840-99d3-eb9a71d9e024)
-
-
----
-
-
-###  6. Configure Template Settings
-
-In `settings.py`:
-
-python
-
-```
-TEMPLATES = [
-    {
-        ...
-        'DIRS': [BASE_DIR / "templates"],  # include this line
-        ...
-    },
-]
-```
-
----
-
-
-
-
-
-
-## Ariticle app
+# Chapter 6: Ariticle app
 
 
 # Django Articles App Guide — CRUD, Comments & Static CSS 
@@ -3191,7 +3036,7 @@ try and test the webpage you have created
  ---
 
 
-## To learn about more clear flow of authentication and password management we will intergerate the following features into our pre existing Newspaper app in chapter 6.All using custom templates/pages, not the default Django ones,
+## To learn about more clear flow of authentication and password management we will intergerate the following features into a sperate app 'accounts' .All using custom templates/pages, not the default Django ones,
 
 * **User signup**
 * **Login**
@@ -3199,6 +3044,10 @@ try and test the webpage you have created
 * **Password change**
 * **Password reset**
 
+
+
+
+## Note:This app is just to teach you the flow of authentication and accounts , it does not include real security features this is only for beginner level learning
 
 ---
 
@@ -3701,23 +3550,31 @@ Visit `http://127.0.0.1:8000/accounts/signup/` to start testing.
 
 # Chapter 8 : Newspaper app ( full version )
 
-
-This is a fully running news paper app combining all three app the acoounts ,articles ,pages and config them with their repective templates , this can be easily considered a beginner level project in django
+This is a fully running news paper app combining all three app the accounts ,articles ,pages and config them with their repective templates , this can be easily considered a beginner level project in django
 
 
 let's dive deep into django,
 
 
-## step-by-step guide:
 
 
-### step1: start project using command lines
-
-
-```
-django
+// guide needs to be checked
 
 
 
+end of chapter,
+
+Here is a task for you create a fully running blog app combining all three app the basic blog app ,forms in blog app and authentictaion of blog app and config them with their repective custom templates and try to improve the code quality 
+
+refer to the 
+
+
+# chapter 9: API
+
+need to refered by sir
+
+
+
+# chapter 10:deployement
 
 
